@@ -15,7 +15,6 @@ public class Typedb implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String id;
 
 	private String aditional;
@@ -23,6 +22,14 @@ public class Typedb implements Serializable {
 	private String description;
 
 	private String driver;
+	
+	public Typedb(String id, String aditional, String description, String driver) {
+		super();
+		this.id = id;
+		this.aditional = aditional;
+		this.description = description;
+		this.driver = driver;
+	}
 
 	//bi-directional many-to-one association to Connectiontoken
 	@OneToMany(mappedBy="typedb")

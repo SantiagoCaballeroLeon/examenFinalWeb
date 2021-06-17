@@ -10,26 +10,29 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import co.caballero.web.dao.ConnectiontokenDao;
 import co.caballero.web.dao.RolDao;
-import co.caballero.web.dao.UsuarioDao;
+import co.caballero.web.dao.TypedbDao;
+import co.caballero.web.modelo.Connectiontoken;
 import co.caballero.web.modelo.Rol;
+import co.caballero.web.modelo.Typedb;
 import co.caballero.web.modelo.Usuario;
 
 /**
- * Servlet implementation class RegistroServlet
+ * Servlet implementation class ConnToken
  */
-@WebServlet("/registro")
-public class RegistroServlet extends HttpServlet {
+@WebServlet("/token")
+public class ConnToken extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    private RolDao rolDao;   
-    private UsuarioDao usuarioDao;
+    private TypedbDao tdbDao;
+    private ConnectiontokenDao ckDao;
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public RegistroServlet() {
+    public ConnToken() {
         super();
-        rolDao = new RolDao();
-        usuarioDao = new UsuarioDao();
+        tdbDao = new TypedbDao();
+        ckDao = new ConnectiontokenDao();
         // TODO Auto-generated constructor stub
     }
 
@@ -37,9 +40,9 @@ public class RegistroServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		List<Rol> roles = rolDao.list();
-		request.setAttribute("roles", roles);
-		RequestDispatcher dispatcher = request.getRequestDispatcher("registrarUsuario.jsp");
+		List<Typedb> tipos = tdbDao.list();
+		request.setAttribute("tipos", tipos);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("token.jsp");
 		dispatcher.forward(request, response);
 	}
 
@@ -47,12 +50,15 @@ public class RegistroServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String usuario = request.getParameter("usuario");
-		String email = request.getParameter("email");
+		String host = request.getParameter("host");
+		String userDB = request.getParameter("userDB");
 		String pass = request.getParameter("pass");
-		Rol r = rolDao.find(Integer.parseInt(request.getParameter("rol")));
-		Usuario u = new Usuario(email, pass, (short) 1, usuario, r);
-		usuarioDao.insert(u);
+		short puerto = Short.parseShort(request.getParameter("puerto"));
+		String token = request.getParameter("token");
+		Typedb type = tdbDao.find(Integer.parseInt(request.getParameter("type")));
+		String db = request.getParameter("db");
+		Connectiontoken ck = new Connectiontoken(db, host, pass, puerto, token, userDB, type);
+		ckDao.insert(ck);
 		response.sendRedirect("/final-web/administrador");
 	}
 

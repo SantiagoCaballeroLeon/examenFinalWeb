@@ -15,7 +15,7 @@ public class Connectiontoken implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 
 	private String db;
@@ -31,6 +31,18 @@ public class Connectiontoken implements Serializable {
 	private String token;
 
 	private String userdb;
+	
+	public Connectiontoken(String db, String host, String pass, short port, String token, String userdb,
+			Typedb typedb) {
+		super();
+		this.db = db;
+		this.host = host;
+		this.pass = pass;
+		this.port = port;
+		this.token = token;
+		this.userdb = userdb;
+		this.typedb = typedb;
+	}
 
 	//bi-directional many-to-one association to Typedb
 	@ManyToOne

@@ -9,23 +9,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import co.caballero.web.dao.UsuarioDao;
+import co.caballero.web.dao.TypedbDao;
+import co.caballero.web.modelo.Rol;
+import co.caballero.web.modelo.Typedb;
 import co.caballero.web.modelo.Usuario;
 
 /**
- * Servlet implementation class LoginController
+ * Servlet implementation class BasesController
  */
-@WebServlet("/")
-public class LoginController extends HttpServlet {
+@WebServlet("/bases")
+public class BasesController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UsuarioDao usuarioDao;
-       
+	private TypedbDao tdbDao;
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public LoginController() {
+    public BasesController() {
         super();
-        usuarioDao = new UsuarioDao();
+        tdbDao = new TypedbDao();
         // TODO Auto-generated constructor stub
     }
 
@@ -33,7 +34,7 @@ public class LoginController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher dispatcher = request.getRequestDispatcher("inicioSesion.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("registrarBase.jsp");
 		dispatcher.forward(request, response);
 	}
 
@@ -41,20 +42,13 @@ public class LoginController extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String usuario = request.getParameter("usuario");
-		String email = request.getParameter("email");
-		String pass = request.getParameter("pass");
-		Usuario u = usuarioDao.findByField("email", email);
-		if (u.getPass().equals(pass) && u.getUsuario().equals(usuario)) {
-			request.getSession().setAttribute("usuario", u);
-			if (u.getRol().getId() == 1) {
-				response.sendRedirect("/final-web/administrador");  
-			} else {
-				response.sendRedirect("/final-web/administrador");  
-			}
-		} else {
-			
-		}
+		String id = request.getParameter("id");
+		String descripcion = request.getParameter("descripcion");
+		String driver = request.getParameter("drive");
+		String adicional = request.getParameter("adicional");
+		Typedb tdb = new Typedb(id, adicional, descripcion, driver);
+		tdbDao.insert(tdb);
+		response.sendRedirect("/final-web/administrador");
 	}
 
 }
