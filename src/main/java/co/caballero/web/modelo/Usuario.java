@@ -25,6 +25,15 @@ public class Usuario implements Serializable {
 	private short state;
 
 	private String usuario;
+	
+	public Usuario(String email, String pass, short state, String usuario, Rol rol) {
+		super();
+		this.email = email;
+		this.pass = pass;
+		this.state = state;
+		this.usuario = usuario;
+		this.rol = rol;
+	}
 
 	//bi-directional many-to-one association to Connectiontoken
 	@OneToMany(mappedBy="usuario")

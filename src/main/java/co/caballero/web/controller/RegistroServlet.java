@@ -1,6 +1,7 @@
 package co.caballero.web.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,22 +10,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import co.caballero.web.dao.RolDao;
 import co.caballero.web.dao.UsuarioDao;
+import co.caballero.web.modelo.Rol;
 import co.caballero.web.modelo.Usuario;
 
 /**
- * Servlet implementation class LoginController
+ * Servlet implementation class RegistroServlet
  */
-@WebServlet("/")
-public class LoginController extends HttpServlet {
+@WebServlet("/registro")
+public class RegistroServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private UsuarioDao usuarioDao;
-       
+    private RolDao rolDao;   
+    private UsuarioDao usuarioDao;
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public LoginController() {
+    public RegistroServlet() {
         super();
+        rolDao = new RolDao();
         usuarioDao = new UsuarioDao();
         // TODO Auto-generated constructor stub
     }
@@ -33,7 +37,9 @@ public class LoginController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher dispatcher = request.getRequestDispatcher("inicioSesion.jsp");
+		List<Rol> roles = rolDao.list();
+		request.setAttribute("roles", roles);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("registrarUsuario.jsp");
 		dispatcher.forward(request, response);
 	}
 
@@ -44,17 +50,10 @@ public class LoginController extends HttpServlet {
 		String usuario = request.getParameter("usuario");
 		String email = request.getParameter("email");
 		String pass = request.getParameter("pass");
-		Usuario u = usuarioDao.findByField("email", email);
-		if (u.getPass().equals(pass) && u.getUsuario().equals(usuario)) {
-			request.getSession().setAttribute("usuario", u);
-			if (u.getRol().getId() == 1) {
-				response.sendRedirect("administrador");  
-			} else {
-				response.sendRedirect("usuario");  
-			}
-		} else {
-			
-		}
+		Rol r = rolDao.find(Integer.parseInt(request.getParameter("rol")));
+		Usuario u = new Usuario(email, pass, (short) 0, usuario, r);
+		usuarioDao.insert(u);
+		response.sendRedirect("/");
 	}
 
 }
